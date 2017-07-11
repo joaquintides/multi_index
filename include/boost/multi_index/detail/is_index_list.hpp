@@ -1,4 +1,4 @@
-/* Copyright 2003-2013 Joaquin M Lopez Munoz.
+/* Copyright 2003-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,8 +14,7 @@
 #endif
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
-#include <boost/mpl/empty.hpp>
-#include <boost/mpl/is_sequence.hpp>
+#include <type_traits>
 
 namespace boost{
 
@@ -24,12 +23,10 @@ namespace multi_index{
 namespace detail{
 
 template<typename T>
-struct is_index_list
-{
-  BOOST_STATIC_CONSTANT(bool,mpl_sequence=mpl::is_sequence<T>::value);
-  BOOST_STATIC_CONSTANT(bool,non_empty=!mpl::empty<T>::value);
-  BOOST_STATIC_CONSTANT(bool,value=mpl_sequence&&non_empty);
-};
+struct is_index_list:std::false_type{};
+
+template<template <class...> class L,typename typename T0,typename... T>
+struct is_index_list<L<T0,T...>>:std::true_type{};
 
 } /* namespace multi_index::detail */
 

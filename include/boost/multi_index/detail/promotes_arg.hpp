@@ -30,10 +30,10 @@ namespace multi_index{
 namespace detail{
 
 template<typename F,typename Arg1,typename Arg2>
-struct promotes_1st_arg:mpl::false_{};
+struct promotes_1st_arg:std::false_type{};
 
 template<typename F,typename Arg1,typename Arg2>
-struct promotes_2nd_arg:mpl::false_{};
+struct promotes_2nd_arg:std::false_type{};
 
 } /* namespace multi_index::detail */
 
@@ -43,9 +43,7 @@ struct promotes_2nd_arg:mpl::false_{};
 
 #else
 
-#include <boost/mpl/and.hpp>
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/not.hpp>
+#include <boost/mp11/function.hpp>
 #include <boost/multi_index/detail/is_transparent.hpp>
 #include <boost/type_traits/is_convertible.hpp>
 
@@ -57,8 +55,8 @@ namespace detail{
   
 template<typename F,typename Arg1,typename Arg2>
 struct promotes_1st_arg:
-  mpl::and_<
-    mpl::not_<is_transparent<F,Arg1,Arg2> >,
+  mp11::mp_and<
+    mp11::mp_not<is_transparent<F,Arg1,Arg2> >,
     is_convertible<const Arg1,Arg2>,
     is_transparent<F,Arg2,Arg2>
   >
@@ -66,8 +64,8 @@ struct promotes_1st_arg:
 
 template<typename F,typename Arg1,typename Arg2>
 struct promotes_2nd_arg:
-  mpl::and_<
-    mpl::not_<is_transparent<F,Arg1,Arg2> >,
+  mp11::mp_and<
+    mp11::mp_not<is_transparent<F,Arg1,Arg2> >,
     is_convertible<const Arg2,Arg1>,
     is_transparent<F,Arg1,Arg1>
   >

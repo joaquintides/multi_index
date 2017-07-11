@@ -1,4 +1,4 @@
-/* Copyright 2003-2015 Joaquin M Lopez Munoz.
+/* Copyright 2003-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -23,9 +23,9 @@
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility.hpp>
+#include <boost/mp11/list.hpp>
+#include <boost/mp11/function.hpp>
 #include <boost/mpl/bool.hpp>
-#include <boost/mpl/not.hpp>
-#include <boost/mpl/push_front.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -40,6 +40,7 @@
 #include <boost/type_traits/is_integral.hpp>
 #include <cstddef>
 #include <functional>
+#include <type_traits>
 #include <utility>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -133,15 +134,15 @@ protected:
   typedef tuples::cons<
     ctor_args, 
     typename super::ctor_args_list>           ctor_args_list;
-  typedef typename mpl::push_front<
+  typedef mp11::mp_push_front<
     typename super::index_type_list,
-    sequenced_index>::type                    index_type_list;
-  typedef typename mpl::push_front<
+    sequenced_index>                          index_type_list;
+  typedef mp11::mp_push_front<
     typename super::iterator_type_list,
-    iterator>::type                           iterator_type_list;
-  typedef typename mpl::push_front<
+    iterator>                                 iterator_type_list;
+  typedef mp11::mp_push_front<
     typename super::const_iterator_type_list,
-    const_iterator>::type                     const_iterator_type_list;
+    const_iterator>                           const_iterator_type_list;
   typedef typename super::copy_map_type       copy_map_type;
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
@@ -189,7 +190,7 @@ public:
   template <class InputIterator>
   void assign(InputIterator first,InputIterator last)
   {
-    assign_iter(first,last,mpl::not_<is_integral<InputIterator> >());
+    assign_iter(first,last,mp11::mp_not<is_integral<InputIterator> >());
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -336,7 +337,7 @@ public:
   template<typename InputIterator>
   void insert(iterator position,InputIterator first,InputIterator last)
   {
-    insert_iter(position,first,last,mpl::not_<is_integral<InputIterator> >());
+    insert_iter(position,first,last,mp11::mp_not<is_integral<InputIterator> >());
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -870,14 +871,14 @@ private:
 #endif
 
   template <class InputIterator>
-  void assign_iter(InputIterator first,InputIterator last,mpl::true_)
+  void assign_iter(InputIterator first,InputIterator last,std::true_type)
   {
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     clear();
     for(;first!=last;++first)this->final_insert_ref_(*first);
   }
 
-  void assign_iter(size_type n,value_param_type value,mpl::false_)
+  void assign_iter(size_type n,value_param_type value,std::false_type)
   {
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     clear();
@@ -886,7 +887,7 @@ private:
 
   template<typename InputIterator>
   void insert_iter(
-    iterator position,InputIterator first,InputIterator last,mpl::true_)
+    iterator position,InputIterator first,InputIterator last,std::true_type)
   {
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     for(;first!=last;++first){
@@ -899,7 +900,7 @@ private:
   }
 
   void insert_iter(
-    iterator position,size_type n,value_param_type x,mpl::false_)
+    iterator position,size_type n,value_param_type x,std::false_type)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -1038,7 +1039,7 @@ struct sequenced
   template<typename SuperMeta>
   struct index_class
   {
-    typedef detail::sequenced_index<SuperMeta,typename TagList::type> type;
+    typedef detail::sequenced_index<SuperMeta,TagList> type;
   };
 };
 

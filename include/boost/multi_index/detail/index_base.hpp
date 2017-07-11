@@ -1,4 +1,4 @@
-/* Copyright 2003-2014 Joaquin M Lopez Munoz.
+/* Copyright 2003-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -19,7 +19,7 @@
 #include <boost/detail/workaround.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility.hpp>
-#include <boost/mpl/vector.hpp>
+#include <boost/mp11/list.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/node_type.hpp>
@@ -66,9 +66,9 @@ protected:
     Allocator,
     typename Allocator::value_type
   >::type                                     final_allocator_type;
-  typedef mpl::vector0<>                      index_type_list;
-  typedef mpl::vector0<>                      iterator_type_list;
-  typedef mpl::vector0<>                      const_iterator_type_list;
+  typedef mp11::mp_list<>                     index_type_list;
+  typedef mp11::mp_list<>                     iterator_type_list;
+  typedef mp11::mp_list<>                     const_iterator_type_list;
   typedef copy_map<
     final_node_type,
     final_allocator_type>                     copy_map_type;
